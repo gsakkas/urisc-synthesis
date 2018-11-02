@@ -2,21 +2,27 @@
 
 (require racket/match)
 
-(define regs (make-vector 5 -1000))
 
-(define (eval istr)
+(define (eval istr regs)
   (match istr
-    [(? number?)         istr]
-    [`(add, rd, rs, rt)  (vector-set! regs rd (+ (vector-ref regs rs) (vector-ref regs rt)))]
-    [`(sub, rd, rs, rt)  (vector-set! regs rd (- (vector-ref regs rs) (vector-ref regs rt)))]
-    [`(mult, rd, rs, rt) (vector-set! regs rd (* (vector-ref regs rs) (vector-ref regs rt)))]
+    [`(add ,rd ,rs ,rt)  (vector-set! regs rd (+ (vector-ref regs rs) (vector-ref regs rt)))]
+    [`(sub ,rd ,rs ,rt)  (vector-set! regs rd (- (vector-ref regs rs) (vector-ref regs rt)))]
+    [`(div ,rd ,rs ,rt) (vector-set! regs rd (/ (vector-ref regs rs) (vector-ref regs rt)))]
+    [`(mult ,rd ,rs ,rt) (vector-set! regs rd (* (vector-ref regs rs) (vector-ref regs rt)))]
+    ;; subleq not working as is
+    ;; [`(subleq ,rd ,rs ,rt) (vector-set! regs rd (- (vector-ref regs rs) (vector-ref regs rd))) (if (positive? rd) (+ rd + 1) rt)]
     )
   )
 
+(define (interpret prog)
+  (define regs (make-vector 10 -1000))
+  (vector-set! regs 0 6)
+  (vector-set! regs 1 7)
+  (for ([instr prog])
+    (eval instr regs)
+  )
+  (println regs)
+)
+
 ;; Examples
-(vector-set! regs 0 6)
-(vector-set! regs 1 7)
-
-(eval `(mult 2 0 1))
-
-regs
+(interpret `[(mult 2 1 0) (add 3 2 2)])
