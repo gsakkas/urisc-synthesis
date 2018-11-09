@@ -14,15 +14,18 @@
     )
   )
 
-(define (interpret prog)
-  (define regs (make-vector 10 -1000))
-  (vector-set! regs 0 6)
-  (vector-set! regs 1 7)
+(define (interpret prog inputs)
+  (define len (+ (length prog) (length inputs)))
+  (define regs (make-vector len +nan.0))
+  (for ([in inputs]
+        [i (length inputs)])
+    (vector-set! regs i in)
+  )
   (for ([instr prog])
     (eval instr regs)
   )
-  (println regs)
+  (println (vector-ref regs (- len 1)))
 )
 
 ;; Examples
-(interpret `[(mult 2 1 0) (add 3 2 2)])
+(interpret `[(mult 2 1 0) (add 3 2 2)] `[6 7])
