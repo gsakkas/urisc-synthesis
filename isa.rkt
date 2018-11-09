@@ -9,8 +9,7 @@
     [`(sub ,rd ,rs ,rt)  (vector-set! regs rd (- (vector-ref regs rs) (vector-ref regs rt))) (+ pc 1)]
     [`(div ,rd ,rs ,rt)  (vector-set! regs rd (/ (vector-ref regs rs) (vector-ref regs rt))) (+ pc 1)]
     [`(mult ,rd ,rs ,rt) (vector-set! regs rd (* (vector-ref regs rs) (vector-ref regs rt))) (+ pc 1)]
-    ;; subleq not working as is
-    ;; [`(subleq ,rd ,rs ,rt) (vector-set! regs rd (- (vector-ref regs rs) (vector-ref regs rd))) (if (positive? rd) (+ rd + 1) rt)]
+    [`(subleq ,ra ,rb ,rc) (vector-set! regs rb (- (vector-ref regs rb) (vector-ref regs ra))) (if (positive? rb) (+ pc 1) rc)]
     )
   )
 
