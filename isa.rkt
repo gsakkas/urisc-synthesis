@@ -3,12 +3,12 @@
 (require racket/match)
 
 
-(define (eval istr regs)
+(define (eval istr regs pc)
   (match istr
-    [`(add ,rd ,rs ,rt)  (vector-set! regs rd (+ (vector-ref regs rs) (vector-ref regs rt)))]
-    [`(sub ,rd ,rs ,rt)  (vector-set! regs rd (- (vector-ref regs rs) (vector-ref regs rt)))]
-    [`(div ,rd ,rs ,rt) (vector-set! regs rd (/ (vector-ref regs rs) (vector-ref regs rt)))]
-    [`(mult ,rd ,rs ,rt) (vector-set! regs rd (* (vector-ref regs rs) (vector-ref regs rt)))]
+    [`(add ,rd ,rs ,rt)  (vector-set! regs rd (+ (vector-ref regs rs) (vector-ref regs rt))) (+ pc 1)]
+    [`(sub ,rd ,rs ,rt)  (vector-set! regs rd (- (vector-ref regs rs) (vector-ref regs rt))) (+ pc 1)]
+    [`(div ,rd ,rs ,rt)  (vector-set! regs rd (/ (vector-ref regs rs) (vector-ref regs rt))) (+ pc 1)]
+    [`(mult ,rd ,rs ,rt) (vector-set! regs rd (* (vector-ref regs rs) (vector-ref regs rt))) (+ pc 1)]
     ;; subleq not working as is
     ;; [`(subleq ,rd ,rs ,rt) (vector-set! regs rd (- (vector-ref regs rs) (vector-ref regs rd))) (if (positive? rd) (+ rd + 1) rt)]
     )
@@ -21,11 +21,13 @@
         [i (length inputs)])
     (vector-set! regs i in)
   )
-  (for ([instr prog])
-    (eval instr regs)
+  (do ([pc 0])
+      ((>= pc (length prog)))
+    (let ([instr (list-ref prog pc)])
+      (set! pc (eval instr regs pc)))
   )
-  (println (vector-ref regs (- len 1)))
+  (vector-ref regs (- len 1))
 )
 
 ;; Examples
-(interpret `[(mult 2 1 0) (add 3 2 2)] `[6 7])
+(println (interpret `[(mult 2 1 0) (add 3 2 2)] `[6 7]))
