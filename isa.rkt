@@ -9,11 +9,13 @@
     [`(sub ,rd ,rs ,rt)  (vector-set! regs rd (- (vector-ref regs rs) (vector-ref regs rt))) (+ pc 1)]
     [`(div ,rd ,rs ,rt)  (vector-set! regs rd (/ (vector-ref regs rs) (vector-ref regs rt))) (+ pc 1)]
     [`(mult ,rd ,rs ,rt) (vector-set! regs rd (* (vector-ref regs rs) (vector-ref regs rt))) (+ pc 1)]
+    [`(beqz ,rd ,rc) (if (equal? (vector-ref regs rd) 0) (vector-ref regs rc) (+ pc 1) )]
     [`(subleqi ,ra ,rb ,rc) (vector-set! regs rb (- (vector-ref regs rb) (vector-ref regs ra)))
                            (if (positive? (vector-ref regs rb) ) (+ pc 1) rc)]
     [`(subleq ,ra ,rb ,rc) (vector-set! regs rb (- (vector-ref regs rb) (vector-ref regs ra))) 
                            (if (positive? (vector-ref regs rb) ) (+ pc 1) 
                                (vector-ref regs rc))]
+    [`(goto ,pos) pos] 
     )
   )
 
@@ -25,11 +27,11 @@
     (vector-set! regs i in)
   )
   (do ([pc 0])
-      ((>= pc (length prog)))
+      ((>= pc (length prog)) (vector-set! regs 0 pc) )
     (let ([instr (list-ref prog pc)])
       (set! pc (eval instr regs pc)))
   )
-  (vector-ref regs 0)
+  (vector (vector-ref regs 0) (vector-ref regs 1))
 )
 
 ;; Examples
@@ -39,15 +41,15 @@
 (define regs (vector (dynamic) (dynamic) (dynamic) (dynamic) (dynamic) ))
 
 (define exp1
-(interpret `[(subleqi 3 3 1) (subleqi 1 3 2) (subleqi 2 3 3) (subleqi 0 0 4)
-                      (subleqi 3 0 5)] regs)
+(interpret `[(subleqi 4 4 1) (subleqi 2 4 2) (subleqi 3 4 3) (subleqi 1 1 4)
+                      (subleqi 4 1 5) (goto 100)] regs)
 )
 
 (define exp2
-(interpret `[(add 0 1 2)] regs)
+(interpret `[(add 1 2 3) (goto 100)] regs)
 )
 
 (define exp3
-  (interpret `[(sub 0 1 2)] regs))
+  (interpret `[(sub 1 2 3) (goto 100)] regs))
 
-(verify (assert (= exp2 exp3)))
+(verify (assert (equal? exp2 exp3)))
