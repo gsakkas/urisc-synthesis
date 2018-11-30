@@ -12,10 +12,10 @@
     [`(beqz ,rd ,rc) (if (equal? (vector-ref regs rd) 0) (vector-ref regs rc) (+ pc 1) )]
     [`(subleqi ,ra ,rb ,rc) (vector-set! regs rb (- (vector-ref regs rb) (vector-ref regs ra)))
                            (if (positive? (vector-ref regs rb) ) (+ pc 1) rc)]
-    [`(subleq ,ra ,rb ,rc) (vector-set! regs rb (- (vector-ref regs rb) (vector-ref regs ra))) 
-                           (if (positive? (vector-ref regs rb) ) (+ pc 1) 
+    [`(subleq ,ra ,rb ,rc) (vector-set! regs rb (- (vector-ref regs rb) (vector-ref regs ra)))
+                           (if (positive? (vector-ref regs rb) ) (+ pc 1)
                                (vector-ref regs rc))]
-    [`(goto ,pos) pos] 
+    [`(goto ,pos) pos]
     )
   )
 
@@ -40,16 +40,21 @@
 (define (dynamic) (define-symbolic* a integer?) a)
 (define regs (vector (dynamic) (dynamic) (dynamic) (dynamic) (dynamic) ))
 
-(define exp1
-(interpret `[(subleqi 4 4 1) (subleqi 2 4 2) (subleqi 3 4 3) (subleqi 1 1 4)
+(define add-ex
+  (interpret `[(subleqi 4 4 1) (subleqi 2 4 2) (subleqi 3 4 3) (subleqi 1 1 4)
                       (subleqi 4 1 5) (goto 100)] regs)
 )
 
 (define exp2
-(interpret `[(add 1 2 3) (goto 100)] regs)
+  (interpret `[(add 1 2 3) (goto 100)] regs)
 )
 
-(define exp3
-  (interpret `[(sub 1 2 3) (goto 100)] regs))
+(define beqz-ex
+  (interpret `[(subleqi 3 3 1) (subleqi 1 3 2) (subleqi 3 3 4) (subleqi 3 3 3) (subleq 3 1 2)] regs)
+  )
 
-(verify (assert (equal? exp2 exp3)))
+(define beqz-orig
+  (interpret `[(beqz 1 2)] regs)
+  )
+
+(verify (assert (and (equal? beqz-ex beqz-orig) (negative? (vector-ref regs 2)))))
