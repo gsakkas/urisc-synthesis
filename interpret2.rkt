@@ -15,11 +15,13 @@
 (define (interpret prog pc regs)
   (println prog) (println pc) (println regs)
   (cond 
-    [(or (>= pc (length prog)) (< pc 0)) pc]
-    [else ((let ([instr (list-ref prog pc)])
-       (set! pc (do_instr (list-ref instr 0) (list-ref instr 1)
-                          (list-ref instr 2) (list-ref instr 3) regs pc))
-  ) (interpret prog pc regs)) ])
+    [(or (>= pc (length prog)) (< pc 0))
+     (println "COND1") pc]
+    [else (println "COND2") 
+          (let* ([instr (list-ref prog pc)]
+                 [pc (do_instr (list-ref instr 0) (list-ref instr 1)
+                          (list-ref instr 2) (list-ref instr 3) regs pc)])
+          (interpret prog pc regs)) ])
 )
 
 (define (dynamic) (define-symbolic* a integer?) a)
