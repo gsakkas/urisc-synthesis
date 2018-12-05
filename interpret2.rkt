@@ -1,32 +1,65 @@
 #lang rosette
-(define (do_instr istr r1 r2 r3 regs pc)
+(define (do_instr prog istr r1 r2 r3 regs pc)
   (case istr
-    ['add (vector-set! regs r1 (+ (vector-ref regs r2) (vector-ref regs r3))) (+ pc 1)]
-    ['beqz (if (equal? (vector-ref regs r1) 0) (vector-ref regs r2) (+ pc 1) )]
+    ['add (vector-set! regs r1 (+ (vector-ref regs r2) (vector-ref regs r3))) 
+     (interpret prog (+ pc 1) regs)]
+    ['beqzi (let ([regs2 (copy-vec regs)])
+           (if (equal? (vector-ref regs r1) 0) 
+           (interpret prog r2 regs)
+           (interpret prog (+ pc 1) regs2)))]
     ['subleqi (vector-set! regs r2 (- (vector-ref regs r2) (vector-ref regs r1)))
-                            (if (positive? (vector-ref regs r2) ) (+ pc 1) r3)]
+           (let ([regs2 (copy-vec regs)])
+           (if (positive? (vector-ref regs r2) ) 
+           (interpret prog (+ pc 1) regs)
+           (interpret prog r3 regs2)))]
     ['subleq (vector-set! regs r2 (- (vector-ref regs r2) (vector-ref regs r1)))
-                           (if (positive? (vector-ref regs r2) ) (+ pc 1)
-                               (vector-ref regs r3))]
-    ['goto r1]
+           (let ([regs2 (copy-vec regs)])
+           (if (positive? (vector-ref regs r2) )
+           (interpret prog (+ pc 1) regs)
+           (interpret prog (vector-ref regs r3) regs2)))]
+    ['goto (interpret prog r1 regs)]
     )
   )
 
 (define (interpret prog pc regs)
-  (println prog) (println pc) (println regs)
+  (print regs)
   (cond 
-    [(or (>= pc (length prog)) (< pc 0))
-     (println "COND1") pc]
-    [else (println "COND2") 
-          (let* ([instr (list-ref prog pc)]
-                 [pc (do_instr (list-ref instr 0) (list-ref instr 1)
-                          (list-ref instr 2) (list-ref instr 3) regs pc)])
-          (interpret prog pc regs)) ])
+    [(and (>= pc 0) (< pc (length prog)))
+      (println "COND2") 
+      (println pc)
+          (let* ([pc pc]
+                 [instr (list-ref prog pc)]
+                 [len (vector-length regs)])
+                 (do_instr prog (list-ref instr 0) (list-ref instr 1)
+                          (list-ref instr 2) (list-ref instr 3) regs pc))
+    ]
+    [else 
+      (println "COND1") `[,pc ,regs] ])
+)
+
+(define (copy-vec regs)
+  (define len (vector-length regs))
+  (define r (make-vector len 0))
+  (for ([in regs]
+        [i len])
+     (vector-set! r i in)
+  )
+  r
 )
 
 (define (dynamic) (define-symbolic* a integer?) a)
 (define regs (vector (dynamic) (dynamic) (dynamic) (dynamic) (dynamic) ))
 
 (define add-orig
-  (interpret `[(add 1 2 3) (goto 100 -100 -100)] 0 regs)
+  (interpret `[(add 1 2 3) (goto 100 -100 -100)] 0 (copy-vec regs))
+)
+(println "DONE")
+(define beqz-orig
+  (interpret `[(beqzi 1 101 -100) (goto 100 -100 -100)] 0 (copy-vec regs))
+)
+(println "DONE")
+(define beqz-ex
+  (interpret `[(subleqi 3 3 1) (subleqi 1 3 3) (subleqi 3 3 5) (subleqi 3 3 4)
+                               (subleqi 3 1 101) (goto 100 -100 -100)] 
+                               0 (copy-vec regs))
 )
