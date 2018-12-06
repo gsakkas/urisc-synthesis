@@ -1,5 +1,7 @@
 #lang rosette
 
+(require rosette/lib/syntax)
+
 (define (dynamic) (define-symbolic* a integer?) a)
 
 (define (create-regs) (vector (dynamic) (dynamic) (dynamic) (dynamic) (dynamic)
@@ -36,15 +38,15 @@
   (vector pc (vector-ref regs 0))
 )
 
-;; Examples
+;; Verification examples
 (define (add-ex regs)
   (interpret `[(subleqi 3 3 1) (subleqi 1 3 2) (subleqi 2 3 3) (subleqi 0 0 4)
-                      (subleqi 3 0 5) (goto 100)] regs)
-)
+                               (subleqi 3 0 5) (goto 100)] regs)
+  )
 
 (define (add-orig regs)
   (interpret `[(add 0 1 2) (goto 100)] regs)
-)
+  )
 
 (define (beqz-ex regs)
   (interpret `[(subleqi 3 3 1) (subleqi 1 3 3) (subleqi 3 3 5) (subleqi 3 3 4)
@@ -61,3 +63,26 @@
   )
 
 (verify (same beqz-orig beqz-ex))
+
+
+;; Synthesis examples
+(define regs (create-regs))
+
+(define (add-ex-synth regs)
+  (interpret `[(subleqi (??) (??) (??)) (subleqi 1 3 2) (subleqi 2 3 3) (subleqi 0 0 4)
+                               (subleqi 3 0 5) (goto 100)] regs)
+  )
+
+(define (add-orig-synth regs)
+  (interpret `[(add 0 1 2) (goto 100)] regs)
+  )
+
+(define (idio original example)
+  (assert (equal? (original regs) (example regs)))
+  )
+
+(define sol
+  (synthesize #:forall regs
+              #:guarantee (idio add-orig-synth add-ex-synth)))
+
+(print-forms sol)
