@@ -1,6 +1,6 @@
 #lang rosette
 
-(require rosette/lib/syntax)
+(require rosette/lib/synthax)
 
 (define (dynamic) (define-symbolic* a integer?) a)
 
@@ -19,6 +19,9 @@
       [(equal? op 'beqz)
        (define r1 (list-ref instr 1)) (define r2 (list-ref instr 2))
        (set! pc (if (equal? (vector-ref regs r1) 0) (vector-ref regs r2) (+ pc 1)))]
+      [(equal? op 'beqzi)
+       (define r1 (list-ref instr 1)) (define L2 (list-ref instr 2))
+       (set! pc (if (equal? (vector-ref regs r1) 0) L2 (+ pc 1)))]
       [(equal? op 'subleqi)
        (define r1 (list-ref instr 1)) (define r2 (list-ref instr 2)) (define L3 (list-ref instr 3))
        (vector-set! regs r2 (- (vector-ref regs r2) (vector-ref regs r1)))
@@ -30,10 +33,10 @@
       [(equal? op 'goto)
        (define L1 (list-ref instr 1))
        (set! pc L1)]
-      [else (set! pc 100) (println "No such opcode defined!")]))
-  (do ()
-      ((assert (and (< pc (length prog)) (>= pc 0))))
-    (interpret-inst (list-ref prog pc))
+      [else (set! pc 100) (print "No such opcode defined! ") (println op)]))
+  (for ([i len])
+    (println pc)
+    (interpret-inst (list-ref prog i))
     )
   (vector pc (vector-ref regs 0))
 )
@@ -49,12 +52,12 @@
   )
 
 (define (beqz-ex regs)
-  (interpret `[(subleqi 3 3 1) (subleqi 1 3 3) (subleqi 3 3 5) (subleqi 3 3 4)
-                               (subleq 3 1 2) (goto 100)] regs)
+  (interpret `[(subleqi 0 0 1) (subleqi 1 0 3) (subleqi 0 0 5) (subleqi 0 0 4)
+                               (subleqi 0 1 6) (goto 5) (goto 6) (goto 7)] regs)
   )
 
 (define (beqz-orig regs)
-  (interpret `[(beqz 1 2) (goto 100)] regs)
+  (interpret `[(beqzi 1 6) (goto 5) (goto 2) (goto 3) (goto 4) (goto 5) (goto 6) (goto 7)] regs)
   )
 
 (define (same original example)
@@ -66,23 +69,23 @@
 
 
 ;; Synthesis examples
-(define regs (create-regs))
+;; (define regs (create-regs))
 
-(define (add-ex-synth regs)
-  (interpret `[(subleqi (??) (??) (??)) (subleqi 1 3 2) (subleqi 2 3 3) (subleqi 0 0 4)
-                               (subleqi 3 0 5) (goto 100)] regs)
-  )
+;; (define (add-ex-synth regs)
+;;   (interpret `[(subleqi (??) (??) (??)) (subleqi 1 3 2) (subleqi 2 3 3) (subleqi 0 0 4)
+;;                                (subleqi 3 0 5) (goto 100)] regs)
+;;   )
 
-(define (add-orig-synth regs)
-  (interpret `[(add 0 1 2) (goto 100)] regs)
-  )
+;; (define (add-orig-synth regs)
+;;   (interpret `[(add 0 1 2) (goto 100)] regs)
+;;   )
 
-(define (idio original example)
-  (assert (equal? (original regs) (example regs)))
-  )
+;; (define (idio original example regs)
+;;   (assert (equal? (original regs) (example regs)))
+;;   )
 
-(define sol
-  (synthesize #:forall regs
-              #:guarantee (idio add-orig-synth add-ex-synth)))
+;; (define sol
+;;   (synthesize #:forall regs
+;;               #:guarantee (idio add-orig-synth add-ex-synth regs)))
 
-(print-forms sol)
+;; (print-forms sol)
