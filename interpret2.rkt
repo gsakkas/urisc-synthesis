@@ -3,6 +3,8 @@
   (case istr
     ['add (vector-set! regs r1 (+ (vector-ref regs r2) (vector-ref regs r3))) 
      (interpret prog (+ pc 1) regs)]
+    ['sub (vector-set! regs r1 (- (vector-ref regs r2) (vector-ref regs r3))) 
+     (interpret prog (+ pc 1) regs)]
     ['beqzi (let ([regs2 (copy-vec regs)])
            (if (equal? (vector-ref regs r1) 0) 
            (interpret prog r2 regs)
@@ -37,6 +39,10 @@
       (println "COND1") `[,pc ,regs] ])
 )
 
+(define (interpret-top prog pc regs)
+  (let ([ans (interpret prog pc regs)])
+  (vector (list-ref ans 1) (vector-ref (list-ref ans 1) 1)))
+)
 (define (copy-vec regs)
   (define len (vector-length regs))
   (define r (make-vector len 0))
@@ -50,16 +56,30 @@
 (define (dynamic) (define-symbolic* a integer?) a)
 (define regs (vector (dynamic) (dynamic) (dynamic) (dynamic) (dynamic) ))
 
-(define add-orig
-  (interpret `[(add 1 2 3) (goto 100 -100 -100)] 0 (copy-vec regs))
-)
+;(define add-orig
+;  (interpret `[(add 1 2 3) (goto 100 -100 -100)] 0 (copy-vec regs))
+;)
 (println "DONE")
 (define beqz-orig
-  (interpret `[(beqzi 1 101 -100) (goto 100 -100 -100)] 0 (copy-vec regs))
+  (interpret-top `[(beqzi 1 101 -100) (goto 100 -100 -100)] 0 (copy-vec regs))
 )
 (println "DONE")
 (define beqz-ex
-  (interpret `[(subleqi 3 3 1) (subleqi 1 3 3) (subleqi 3 3 5) (subleqi 3 3 4)
+  (interpret-top `[(subleqi 3 3 1) (subleqi 1 3 3) (subleqi 3 3 5) (subleqi 3 3 4)
                                (subleqi 3 1 101) (goto 100 -100 -100)] 
                                0 (copy-vec regs))
 )
+(define add-ex
+    (interpret-top `[(subleqi 3 3 1) (subleqi 1 3 2) (subleqi 2 3 3) (subleqi 0 0 4)
+                              (subleqi 3 0 5) (goto 100 -100 -100)] 0 (copy-vec regs))
+      )
+
+(define add-orig
+    (interpret-top `[(add 0 1 2) (goto 100 -100 -100)] 0 (copy-vec regs))
+      )
+
+(define sub-orig
+    (interpret-top `[(sub 0 1 2) (goto 100 -100 -100)] 0 (copy-vec regs))
+      )
+
+(verify (assert (equal? beqz-orig beqz-ex)))
