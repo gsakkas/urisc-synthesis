@@ -1,5 +1,6 @@
 #lang rosette
 
+(current-bitwidth 16)
 (require rosette/lib/synthax)
 
 (define (dynamic) (define-symbolic* a integer?) a)
@@ -7,57 +8,371 @@
 (define (create-regs) (vector (dynamic) (dynamic) (dynamic) (dynamic) (dynamic)
                             (dynamic) (dynamic) (dynamic) (dynamic) (dynamic)))
 
+(define (vector-cpy v1)
+  (define len (vector-length v1))
+  (define v2 (make-vector len 0))
+  (for ([i len])
+    (vector-set! v2 i (vector-ref v1 i)))
+  v2)
+
+(define (set-subleq regs r1 r2)
+  (vector-set! regs r2 (- (vector-ref regs r2) (vector-ref regs r1)))
+)
+
+(define (subleqi-core r1 r2 L3 next regs)
+  (vector-set! regs r2 (- (vector-ref regs r2) (vector-ref regs r1)))
+  (if (positive? (vector-ref regs r2)) next L3)
+)
+
+(define (simple-add a b regs)
+  (+ a b)
+)
+
+(define (subleq-add a b regs)
+  (vector-set! regs 1 a)
+  (vector-set! regs 2 b)
+  ;; subleqi 3 3 1
+  (define r1 (??))
+  (define r2 (??))
+  (set-subleq regs r1 r2)
+  (cond
+    [(positive? (vector-ref regs r2))
+     ;; subleqi 1 3 2
+     (set-subleq regs 1 3)
+     (cond
+       [(positive? (vector-ref regs 3))
+        ;; subleqi 2 3 3
+        (set-subleq regs 2 3)
+        (cond
+          [(positive? (vector-ref regs 3))
+           ;; subleqi 0 0 4
+           (set-subleq regs 0 0)
+           (cond
+             [(positive? (vector-ref regs 0))
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+              )]
+             [else
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+              )]
+           )]
+          [else
+           ;; subleqi 0 0 4
+           (set-subleq regs 0 0)
+           (cond
+             [(positive? (vector-ref regs 0))
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                )]
+             [else
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                )]
+           )]
+        )]
+       [else
+        ;; subleqi 2 3 3
+        (set-subleq regs 2 3)
+        (cond
+          [(positive? (vector-ref regs 3))
+           ;; subleqi 0 0 4
+           (set-subleq regs 0 0)
+           (cond
+             [(positive? (vector-ref regs 0))
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+              )]
+             [else
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+              )]
+           )]
+          [else
+           ;; subleqi 0 0 4
+           (set-subleq regs 0 0)
+           (cond
+             [(positive? (vector-ref regs 0))
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                )]
+             [else
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                )]
+           )]
+        )]
+     )]
+    [else
+     ;; subleqi 1 3 2
+     (set-subleq regs 1 3)
+     (cond
+       [(positive? (vector-ref regs 3))
+        ;; subleqi 2 3 3
+        (set-subleq regs 2 3)
+        (cond
+          [(positive? (vector-ref regs 3))
+           ;; subleqi 0 0 4
+           (set-subleq regs 0 0)
+           (cond
+             [(positive? (vector-ref regs 0))
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+              )]
+             [else
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+              )]
+           )]
+          [else
+           ;; subleqi 0 0 4
+           (set-subleq regs 0 0)
+           (cond
+             [(positive? (vector-ref regs 0))
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                )]
+             [else
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                )]
+           )]
+        )]
+       [else
+        ;; subleqi 2 3 3
+        (set-subleq regs 2 3)
+        (cond
+          [(positive? (vector-ref regs 3))
+           ;; subleqi 0 0 4
+           (set-subleq regs 0 0)
+           (cond
+             [(positive? (vector-ref regs 0))
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+              )]
+             [else
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+              )]
+           )]
+          [else
+           ;; subleqi 0 0 4
+           (set-subleq regs 0 0)
+           (cond
+             [(positive? (vector-ref regs 0))
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                )]
+             [else
+              ;; subleqi 3 0 5
+              (set-subleq regs 3 0)
+              (cond
+                [(positive? (vector-ref regs 0))
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                [else
+                 ;; goto 100
+                 (vector-ref regs 0)
+                 ]
+                )]
+           )]
+        )]
+       )]
+  )
+)
+
 (define (interpret prog regs)
   (define len (length prog))
-  (define pc 0)
-  (define (interpret-inst instr)
+  (define (interpret-inst instr pc regs)
     (define op (list-ref instr 0))
     (cond
       [(equal? op 'add)
        (define r1 (list-ref instr 1)) (define r2 (list-ref instr 2)) (define r3 (list-ref instr 3))
-       (vector-set! regs r1 (+ (vector-ref regs r2) (vector-ref regs r3))) (set! pc (+ pc 1))]
-      [(equal? op 'beqz)
-       (define r1 (list-ref instr 1)) (define r2 (list-ref instr 2))
-       (set! pc (if (equal? (vector-ref regs r1) 0) (vector-ref regs r2) (+ pc 1)))]
-      [(equal? op 'beqzi)
-       (define r1 (list-ref instr 1)) (define L2 (list-ref instr 2))
-       (set! pc (if (equal? (vector-ref regs r1) 0) L2 (+ pc 1)))]
+       (define new_regs (vector-cpy regs))
+       (vector-set! new_regs r1 (+ (vector-ref regs r2) (vector-ref regs r3)))
+       (list (+ pc 1) new_regs)]
+      ;; [(equal? op 'beqz)
+      ;;  (define r1 (list-ref instr 1)) (define r2 (list-ref instr 2))
+      ;;  (set! pc (if (equal? (vector-ref regs r1) 0) (vector-ref regs r2) (+ pc 1)))]
+      ;; [(equal? op 'beqzi)
+      ;;  (define r1 (list-ref instr 1)) (define L2 (list-ref instr 2))
+      ;;  (set! pc (if (equal? (vector-ref regs r1) 0) L2 (+ pc 1)))]
       [(equal? op 'subleqi)
        (define r1 (list-ref instr 1)) (define r2 (list-ref instr 2)) (define L3 (list-ref instr 3))
-       (vector-set! regs r2 (- (vector-ref regs r2) (vector-ref regs r1)))
-       (set! pc (if (positive? (vector-ref regs r2)) (+ pc 1) L3))]
-      [(equal? op 'subleq)
-       (define r1 (list-ref instr 1)) (define r2 (list-ref instr 2)) (define r3 (list-ref instr 3))
-       (vector-set! regs r2 (- (vector-ref regs r2) (vector-ref regs r1)))
-       (set! pc (if (positive? (vector-ref regs r2)) (+ pc 1) (vector-ref regs r3)))]
+       (define new_regs (vector-cpy regs))
+       (vector-set! new_regs r2 (- (vector-ref regs r2) (vector-ref regs r1)))
+       (list (if (positive? (vector-ref regs r2)) (+ pc 1) L3) new_regs)]
+      ;; [(equal? op 'subleq)
+      ;;  (define r1 (list-ref instr 1)) (define r2 (list-ref instr 2)) (define r3 (list-ref instr 3))
+      ;;  (vector-set! regs r2 (- (vector-ref regs r2) (vector-ref regs r1)))
+      ;;  (set! pc (if (positive? (vector-ref regs r2)) (+ pc 1) (vector-ref regs r3)))]
       [(equal? op 'goto)
-       (define L1 (list-ref instr 1))
-       (set! pc L1)]
-      [else (set! pc 100) (print "No such opcode defined! ") (println op)]))
-  (for ([i len])
-    (println pc)
-    (interpret-inst (list-ref prog i))
-    )
-  (vector pc (vector-ref regs 0))
+       (list len regs)]
+      [else (100 regs) (println "No such opcode defined!")]))
+  (define all_states (make-vector (+ len 1) 0))
+  (vector-set! all_states 0 regs)
+  (define all_pcs (make-vector (+ len 1) 0))
+  (for ([pc len])
+    (define res (interpret-inst (list-ref prog pc) pc (vector-ref all_states pc)))
+    (vector-set! all_pcs pc (list-ref res 0))
+    (vector-set! all_states (list-ref res 0) (list-ref res 1))
+   )
+  (vector (vector-ref (vector-ref all_states len) 0))
 )
 
 ;; Verification examples
 (define (add-ex regs)
   (interpret `[(subleqi 3 3 1) (subleqi 1 3 2) (subleqi 2 3 3) (subleqi 0 0 4)
-                               (subleqi 3 0 5) (goto 100)] regs)
+                               (subleqi 3 0 5) (goto)] regs)
   )
 
 (define (add-orig regs)
-  (interpret `[(add 0 1 2) (goto 100)] regs)
+  (interpret `[(add 0 1 2) (goto)] regs)
   )
 
 (define (beqz-ex regs)
   (interpret `[(subleqi 0 0 1) (subleqi 1 0 3) (subleqi 0 0 5) (subleqi 0 0 4)
-                               (subleqi 0 1 6) (goto 5) (goto 6) (goto 7)] regs)
+                               (subleq 0 1 2) (goto 3)] regs)
   )
 
 (define (beqz-orig regs)
-  (interpret `[(beqzi 1 6) (goto 5) (goto 2) (goto 3) (goto 4) (goto 5) (goto 6) (goto 7)] regs)
+  (interpret `[(beqz 1 2) (goto 3)] regs)
   )
 
 (define (same original example)
@@ -65,8 +380,14 @@
   (assert (equal? (original regs) (example regs)))
   )
 
-(verify (same beqz-orig beqz-ex))
+(define (same-new original example)
+  (define-symbolic a integer?)
+  (define-symbolic b integer?)
+  (define regs (make-vector 10 0))
+  (assert (equal? (original a b regs) (example a b regs)))
+  )
 
+;; (verify (same-new simple-add subleq-add))
 
 ;; Synthesis examples
 ;; (define regs (create-regs))
@@ -84,8 +405,11 @@
 ;;   (assert (equal? (original regs) (example regs)))
 ;;   )
 
-;; (define sol
-;;   (synthesize #:forall regs
-;;               #:guarantee (idio add-orig-synth add-ex-synth regs)))
+(define-symbolic a integer?)
+(define-symbolic b integer?)
 
-;; (print-forms sol)
+(define sol
+  (synthesize #:forall (list a b)
+              #:guarantee (same-new simple-add subleq-add)))
+
+(print-forms sol)
