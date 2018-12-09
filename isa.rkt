@@ -19,11 +19,6 @@
   (vector-set! regs r2 (- (vector-ref regs r2) (vector-ref regs r1)))
 )
 
-(define (subleqi-core r1 r2 L3 next regs)
-  (vector-set! regs r2 (- (vector-ref regs r2) (vector-ref regs r1)))
-  (if (positive? (vector-ref regs r2)) next L3)
-)
-
 (define (simple-add a b regs)
   (+ a b)
 )
@@ -317,6 +312,248 @@
   )
 )
 
+
+(define (simple-beqz a L1 L2 regs)
+  (if (equal? a 0) L1 L2)
+)
+
+(define (subleq-beqz a L1 L2 regs)
+  ;; regs[0] is Z (always 0)
+  (vector-set! regs 1 a)
+  (define r1_0 (??)) ;; 1
+  (define r2_0 (??)) ;; 0
+  (define r1_1 (??)) ;; 0
+  (define r2_1 (??)) ;; 0
+  (define r1_2 (??)) ;; 0
+  (define r2_2 (??)) ;; 0
+  (define r1_3 (??)) ;; 0
+  (define r2_3 (??)) ;; 1
+  ;; L0
+  (set-subleq regs r1_0 r2_0)
+  (cond
+    [(positive? (vector-ref regs r2_0))
+     ;; L1
+     (set-subleq regs r1_1 r2_1)
+     (cond
+       [(positive? (vector-ref regs r2_1))
+        ;; L2
+        (set-subleq regs r1_2 r2_2)
+        (cond
+          [(positive? (vector-ref regs r2_2))
+           ;; L3
+           (set-subleq regs r1_3 r2_3)
+           (cond
+             [(positive? (vector-ref regs r2_3))
+              ;; L4 -> L2
+              L2
+             ]
+             [else
+              ;; r2 -> L1
+              L1
+             ]
+           )
+          ]
+          [else
+           ;; L3
+           (set-subleq regs r1_3 r2_3)
+           (cond
+             [(positive? (vector-ref regs r2_3))
+              ;; L4 -> L2
+              L2
+             ]
+             [else
+              ;; r2 -> L1
+              L1
+             ]
+           )
+          ]
+        )
+       ]
+       [else
+        ;; L4 -> L2
+        L2
+       ]
+     )
+    ]
+    [else
+     ;; L2
+     (set-subleq regs r1_2 r2_2)
+     (cond
+       [(positive? (vector-ref regs r2_2))
+        ;; L3
+        (set-subleq regs r1_3 r2_3)
+        (cond
+          [(positive? (vector-ref regs r2_3))
+           ;; L4 -> L2
+           L2
+          ]
+          [else
+           ;; r2 -> L1
+           L1
+          ]
+        )
+       ]
+       [else
+        ;; L3
+        (set-subleq regs r1_3 r2_3)
+        (cond
+          [(positive? (vector-ref regs r2_3))
+           ;; L4 -> L2
+           L2
+          ]
+          [else
+           ;; r2 -> L1
+           L1
+          ]
+        )
+       ]
+     )
+    ]
+  )
+)
+
+(define (simple-mult a b regs)
+  (* a b)
+  )
+
+(define (loop-template a b regs)
+  (vector-set! regs 1 a)
+  (vector-set! regs 2 b)
+  (define line10 (?? boolean?))
+  (define line11 (?? boolean?))
+  (define line12 (?? boolean?))
+  (define line13 (?? boolean?))
+  (define line3 (?? boolean?))
+  (define line4 (?? boolean?))
+  (define r1_0 (??))
+  (define r2_0 (??))
+  (define r1_10 (??))
+  (define r2_10 (??))
+  (define r1_11 (??))
+  (define r2_11 (??))
+  (define r1_12 (??))
+  (define r2_12 (??))
+  (define r1_13 (??))
+  (define r2_13 (??))
+  (define r1_2 (??))
+  (define r2_2 (??))
+  (define r1_3 (??))
+  (define r2_3 (??))
+  (define r1_4 (??))
+  (define r2_4 (??))
+  (define r1_5 (??))
+  (define r2_5 (??))
+  ;; L0
+  (set-subleq regs r1_0 r2_0)
+  ;; L1_0
+  (cond [line10 (set-subleq regs r1_10 r2_10)])
+  ;; L1_1
+  (cond [line11 (set-subleq regs r1_11 r2_11)])
+  ;; L1_2
+  (cond [line12 (set-subleq regs r1_12 r2_12)])
+  ;; L1_3
+  (cond [line13 (set-subleq regs r1_13 r2_13)])
+  ;; L2
+  (set-subleq regs r1_2 r2_2)
+  ;; L3
+  (cond [line3 (set-subleq regs r1_3 r2_3)])
+  ;; L4
+  (cond [line4 (set-subleq regs r1_4 r2_4)])
+  ;; L5
+  (set-subleq regs r1_5 r2_5)
+  (cond
+    [(positive? (vector-ref regs r2_5))
+     ;; Exit
+     (vector-ref regs 0)]
+    [else
+     ;; L2
+     (set-subleq regs r1_2 r2_2)
+     ;; L3
+     (cond [line3 (set-subleq regs r1_3 r2_3)])
+     ;; L4
+     (cond [line4 (set-subleq regs r1_4 r2_4)])
+     ;; L5
+     (set-subleq regs r1_5 r2_5)
+     (cond
+       [(positive? (vector-ref regs r2_5))
+        ;; Exit
+        (vector-ref regs 0)]
+       [else
+        ;; L2
+        (set-subleq regs r1_2 r2_2)
+        ;; L3
+        (cond [line3 (set-subleq regs r1_3 r2_3)])
+        ;; L4
+        (cond [line4 (set-subleq regs r1_4 r2_4)])
+        ;; L5
+        (set-subleq regs r1_5 r2_5)
+        (cond
+          [(positive? (vector-ref regs r2_5))
+           ;; Exit
+           (vector-ref regs 0)]
+          [else
+           ;; L2
+           (set-subleq regs r1_2 r2_2)
+           ;; L3
+           (cond [line3 (set-subleq regs r1_3 r2_3)])
+           ;; L4
+           (cond [line4 (set-subleq regs r1_4 r2_4)])
+           ;; L5
+           (set-subleq regs r1_5 r2_5)
+           (cond
+             [(positive? (vector-ref regs r2_5))
+              ;; Exit
+              (vector-ref regs 0)]
+             [else
+              ;; L2
+              (set-subleq regs r1_2 r2_2)
+              ;; L3
+              (cond [line3 (set-subleq regs r1_3 r2_3)])
+              ;; L4
+              (cond [line4 (set-subleq regs r1_4 r2_4)])
+              ;; L5
+              (set-subleq regs r1_5 r2_5)
+              (cond
+                [(positive? (vector-ref regs r2_5))
+                 ;; Exit
+                 (vector-ref regs 0)]
+                [else
+                 ;; L2
+                 (set-subleq regs r1_2 r2_2)
+                 ;; L3
+                 (cond [line3 (set-subleq regs r1_3 r2_3)])
+                 ;; L4
+                 (cond [line4 (set-subleq regs r1_4 r2_4)])
+                 ;; L5
+                 (set-subleq regs r1_5 r2_5)
+                 (cond
+                   [(positive? (vector-ref regs r2_5))
+                    ;; Exit
+                    (vector-ref regs 0)]
+                   [else
+                    ;; L2
+                    (set-subleq regs r1_2 r2_2)
+                    ;; L3
+                    (cond [line3 (set-subleq regs r1_3 r2_3)])
+                    ;; L4
+                    (cond [line4 (set-subleq regs r1_4 r2_4)])
+                    ;; L5
+                    (set-subleq regs r1_5 r2_5)
+                    (cond
+                      [(positive? (vector-ref regs r2_5))
+                       ;; Exit
+                       (vector-ref regs 0)]
+                      [else
+                       (vector-ref regs 0)
+                       ])
+                    ])
+                 ])
+              ])
+           ])
+        ])
+     ])
+  )
+
 (define (interpret prog regs)
   (define len (length prog))
   (define (interpret-inst instr pc regs)
@@ -380,14 +617,28 @@
   (assert (equal? (original regs) (example regs)))
   )
 
-(define (same-new original example)
+(define (same-add original example)
   (define-symbolic a integer?)
   (define-symbolic b integer?)
   (define regs (make-vector 10 0))
   (assert (equal? (original a b regs) (example a b regs)))
-  )
+)
 
-;; (verify (same-new simple-add subleq-add))
+(define (same-beqz original example)
+  (define-symbolic a integer?)
+  (define-symbolic L1 integer?)
+  (define-symbolic L2 integer?)
+  (define regs (make-vector 10 0))
+  (assert (equal? (original a L1 L2 regs) (example a L1 L2 regs)))
+)
+
+(define (same-mult original example a)
+  (define b 3)
+  (define regs (vector 0 0 0 0 0 0 0 0 1 1))
+  (assert (equal? (original a b regs) (example a b regs)))
+)
+
+;; (verify (same-beqz simple-beqz subleq-beqz))
 
 ;; Synthesis examples
 ;; (define regs (create-regs))
@@ -407,9 +658,10 @@
 
 (define-symbolic a integer?)
 (define-symbolic b integer?)
+(define-symbolic c integer?)
 
 (define sol
-  (synthesize #:forall (list a b)
-              #:guarantee (same-new simple-add subleq-add)))
+  (synthesize #:forall a
+              #:guarantee (same-mult simple-mult loop-template a)))
 
 (print-forms sol)
