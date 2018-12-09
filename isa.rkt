@@ -415,8 +415,8 @@
 
 (define (branch-template a next label1 regs)
   ;; regs[0] is Z (always 0)
-  (vector-set! regs 0 0)
   (vector-set! regs 1 a)
+  (define line0 (?? boolean?))
   (define line1 (?? boolean?))
   (define line2 (?? boolean?))
   (define jump3 (choose 5 6 7 8 9))
@@ -440,7 +440,7 @@
   (define r1_7 (choose 0 1 2 3 4 5 6 7 8 9))
   (define r2_7 (choose 0 3 4 5 6 7 8 9))
   ;; L0
-  (set-subleq regs r1_0 r2_0)
+  (cond [line0 (set-subleq regs r1_0 r2_0)])
   ;; L1
   (cond [line1 (set-subleq regs r1_1 r2_1)])
   ;; L2
@@ -467,7 +467,7 @@
                 [(positive? (vector-ref regs r2_7))
                  next]
                 [else
-                 leabel1])
+                 label1])
               ]
              [else
               ;; L7 -> next || label1
@@ -509,7 +509,7 @@
                 [(positive? (vector-ref regs r2_7))
                  next]
                 [else
-                 leabel1])
+                 label1])
               ]
              [else
               ;; L7 -> next || label1
@@ -552,7 +552,7 @@
                 [(positive? (vector-ref regs r2_7))
                  next]
                 [else
-                 leabel1])
+                 label1])
               ]
              [else
               ;; L7 -> next || label1
@@ -591,7 +591,7 @@
              [(positive? (vector-ref regs r2_7))
               next]
              [else
-              leabel1])
+              label1])
            ]
           [else
            ;; L7 -> next || label1
@@ -829,12 +829,9 @@
   (assert (equal? (original a b regs) (example a b regs)))
 )
 
-(define (same-beqz original example)
-  (define-symbolic a integer?)
-  (define-symbolic L1 integer?)
-  (define-symbolic L2 integer?)
+(define (same-beqz original example a next label1)
   (define regs (make-vector 10 0))
-  (assert (equal? (original a L1 L2 regs) (example a L1 L2 regs)))
+  (assert (equal? (original a next label1 regs) (example a next label1 regs)))
 )
 
 (define (same-mult original example a)
@@ -865,8 +862,12 @@
 (define-symbolic b integer?)
 (define-symbolic c integer?)
 
-(define sol
-  (synthesize #:forall a
-              #:guarantee (same-mult simple-mult loop-template a)))
+(define sol-beqz
+  (synthesize #:forall (list a b c)
+              #:guarantee (same-mult simple-beqz branch-template a b c)))
 
-(print-forms sol)
+;; (define sol-mult
+;;   (synthesize #:forall a
+;;               #:guarantee (same-mult simple-mult loop-template a)))
+
+(print-forms sol-beqz)
