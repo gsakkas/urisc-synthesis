@@ -23,6 +23,51 @@
   (+ a b)
 )
 
+(define (straightline-template a b regs)
+  (vector-set! regs 1 a)
+  (vector-set! regs 2 b)
+  (define line1 (?? boolean?))
+  (define line2 (?? boolean?))
+  (define line3 (?? boolean?))
+  (define line4 (?? boolean?))
+  (define line5 (?? boolean?))
+  (define line6 (?? boolean?))
+  (define line7 (?? boolean?))
+  (define r1_0 (choose 0 1 2 3 4 5 6 7 8 9))
+  (define r2_0 (choose 0 3 4 5 6 7 8 9))
+  (define r1_1 (choose 0 1 2 3 4 5 6 7 8 9))
+  (define r2_1 (choose 0 3 4 5 6 7 8 9))
+  (define r1_2 (choose 0 1 2 3 4 5 6 7 8 9))
+  (define r2_2 (choose 0 3 4 5 6 7 8 9))
+  (define r1_3 (choose 0 1 2 3 4 5 6 7 8 9))
+  (define r2_3 (choose 0 3 4 5 6 7 8 9))
+  (define r1_4 (choose 0 1 2 3 4 5 6 7 8 9))
+  (define r2_4 (choose 0 3 4 5 6 7 8 9))
+  (define r1_5 (choose 0 1 2 3 4 5 6 7 8 9))
+  (define r2_5 (choose 0 3 4 5 6 7 8 9))
+  (define r1_6 (choose 0 1 2 3 4 5 6 7 8 9))
+  (define r2_6 (choose 0 3 4 5 6 7 8 9))
+  (define r1_7 (choose 0 1 2 3 4 5 6 7 8 9))
+  (define r2_7 (choose 0 3 4 5 6 7 8 9))
+  ;; L0
+  (set-subleq regs r1_0 r2_0)
+  ;; L1
+  (cond [line1 (set-subleq regs r1_1 r2_1)])
+  ;; L2
+  (cond [line2 (set-subleq regs r1_2 r2_2)])
+  ;; L3
+  (cond [line3 (set-subleq regs r1_3 r2_3)])
+  ;; L4
+  (cond [line4 (set-subleq regs r1_4 r2_4)])
+  ;; L5
+  (cond [line5 (set-subleq regs r1_5 r2_5)])
+  ;; L6
+  (cond [line6 (set-subleq regs r1_6 r2_6)])
+  ;; L7
+  (cond [line7 (set-subleq regs r1_7 r2_7)])
+  (vector-ref regs 0)
+  )
+
 (define (subleq-add a b regs)
   (vector-set! regs 1 a)
   (vector-set! regs 2 b)
@@ -419,26 +464,26 @@
   (define line0 (?? boolean?))
   (define line1 (?? boolean?))
   (define line2 (?? boolean?))
-  (define jump3 (choose 5 6 7 8 9))
-  (define jump4 (choose 6 7 8 9))
-  (define jump5 (choose 7 8 9))
-  (define jump6 (choose 8 9))
+  (define jump3 (choose 4 5 6 7 8 9))
+  (define jump4 (choose 5 6 7 8 9))
+  (define jump5 (choose 6 7 8 9))
+  (define jump6 (choose 7 8 9))
   (define r1_0 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_0 (choose 0 3 4 5 6 7 8 9))
+  (define r2_0 (choose 3 4 5 6 7 8 9))
   (define r1_1 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_1 (choose 0 3 4 5 6 7 8 9))
+  (define r2_1 (choose 3 4 5 6 7 8 9))
   (define r1_2 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_2 (choose 0 3 4 5 6 7 8 9))
+  (define r2_2 (choose 3 4 5 6 7 8 9))
   (define r1_3 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_3 (choose 0 3 4 5 6 7 8 9))
+  (define r2_3 (choose 3 4 5 6 7 8 9))
   (define r1_4 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_4 (choose 0 3 4 5 6 7 8 9))
+  (define r2_4 (choose 3 4 5 6 7 8 9))
   (define r1_5 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_5 (choose 0 3 4 5 6 7 8 9))
+  (define r2_5 (choose 3 4 5 6 7 8 9))
   (define r1_6 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_6 (choose 0 3 4 5 6 7 8 9))
+  (define r2_6 (choose 3 4 5 6 7 8 9))
   (define r1_7 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_7 (choose 0 3 4 5 6 7 8 9))
+  (define r2_7 (choose 3 4 5 6 7 8 9))
   ;; L0
   (cond [line0 (set-subleq regs r1_0 r2_0)])
   ;; L1
@@ -462,7 +507,7 @@
            (cond
              [(positive? (vector-ref regs r2_6))
               ;; L7
-              (set-subleq r1_7 r2_7)
+              (set-subleq regs r1_7 r2_7)
               (cond
                 [(positive? (vector-ref regs r2_7))
                  next]
@@ -470,8 +515,16 @@
                  label1])
               ]
              [else
-              ;; L7 -> next || label1
+              ;; L6 -> L7 || next || label1
               (cond
+                ;; L7
+                [(equal? jump6 7)
+                 (set-subleq regs r1_7 r2_7)
+                 (cond
+                   [(positive? (vector-ref regs r2_7))
+                    next]
+                   [else
+                    label1])]
                 ;; next
                 [(equal? jump6 8) next]
                 ;; label1
@@ -479,8 +532,36 @@
               ])
            ]
           [else
-           ;; L6 -> L7 || next || label1
+           ;; L5 -> L6 || L7 || next || label1
            (cond
+             ;; L6
+             [(equal? jump5 6)
+              (set-subleq regs r1_6 r2_6)
+              (cond
+                [(positive? (vector-ref regs r2_6))
+                 ;; L7
+                 (set-subleq regs r1_7 r2_7)
+                 (cond
+                   [(positive? (vector-ref regs r2_7))
+                    next]
+                   [else
+                    label1])]
+                [else
+                 ;; L6 -> L7 || next || label1
+                 (cond
+                   ;; L7
+                   [(equal? jump6 7)
+                    (set-subleq regs r1_7 r2_7)
+                    (cond
+                      [(positive? (vector-ref regs r2_7))
+                       next]
+                      [else
+                       label1])]
+                   ;; next
+                   [(equal? jump6 8) next]
+                   ;; label1
+                   [else label1])
+                 ])]
              ;; L7
              [(equal? jump5 7)
               (set-subleq regs r1_7 r2_7)
@@ -496,15 +577,94 @@
            ])
         ]
        [else
-        ;; L5 -> L6 || L7 || next || label1
+        ;; L4 -> L5 || L6 || L7 || next || label1
         (cond
+          ;; L5
+          [(equal? jump4 5)
+           (set-subleq regs r1_5 r2_5)
+           (cond
+             [(positive? (vector-ref regs r2_5))
+              ;; L6
+              (set-subleq regs r1_6 r2_6)
+              (cond
+                [(positive? (vector-ref regs r2_6))
+                 ;; L7
+                 (set-subleq regs r1_7 r2_7)
+                 (cond
+                   [(positive? (vector-ref regs r2_7))
+                    next]
+                   [else
+                    label1])
+                 ]
+                [else
+                 ;; L6 -> L7 || next || label1
+                 (cond
+                   ;; L7
+                   [(equal? jump6 7)
+                    (set-subleq regs r1_7 r2_7)
+                    (cond
+                      [(positive? (vector-ref regs r2_7))
+                       next]
+                      [else
+                       label1])]
+                   ;; next
+                   [(equal? jump6 8) next]
+                   ;; label1
+                   [else label1])
+                 ])
+              ]
+             [else
+              ;; L5 -> L6 || L7 || next || label1
+              (cond
+                ;; L6
+                [(equal? jump5 6)
+                 (set-subleq regs r1_6 r2_6)
+                 (cond
+                   [(positive? (vector-ref regs r2_6))
+                    ;; L7
+                    (set-subleq regs r1_7 r2_7)
+                    (cond
+                      [(positive? (vector-ref regs r2_7))
+                       next]
+                      [else
+                       label1])]
+                   [else
+                    ;; L6 -> L7 || next || label1
+                    (cond
+                      ;; L7
+                      [(equal? jump6 7)
+                       (set-subleq regs r1_7 r2_7)
+                       (cond
+                         [(positive? (vector-ref regs r2_7))
+                          next]
+                         [else
+                          label1])]
+                      ;; next
+                      [(equal? jump6 8) next]
+                      ;; label1
+                      [else label1])
+                    ])]
+                ;; L7
+                [(equal? jump5 7)
+                 (set-subleq regs r1_7 r2_7)
+                 (cond
+                   [(positive? (vector-ref regs r2_7))
+                    next]
+                   [else
+                    label1])]
+                ;; next
+                [(equal? jump5 8) next]
+                ;; label1
+                [else label1])
+              ])
+           ]
           ;; L6
           [(equal? jump4 6)
            (set-subleq regs r1_6 r2_6)
            (cond
              [(positive? (vector-ref regs r2_6))
               ;; L7
-              (set-subleq r1_7 r2_7)
+              (set-subleq regs r1_7 r2_7)
               (cond
                 [(positive? (vector-ref regs r2_7))
                  next]
@@ -512,8 +672,16 @@
                  label1])
               ]
              [else
-              ;; L7 -> next || label1
+              ;; L6 -> L7 || next || label1
               (cond
+                ;; L7
+                [(equal? jump6 7)
+                 (set-subleq regs r1_7 r2_7)
+                 (cond
+                   [(positive? (vector-ref regs r2_7))
+                    next]
+                   [else
+                    label1])]
                 ;; next
                 [(equal? jump6 8) next]
                 ;; label1
@@ -535,9 +703,218 @@
         ])
      ]
     [else
-     ;; L4 -> L5 || L6 || L7 || next || label1
+     ;; L3 -> L4 || L5 || L6 || L7 || next || label1
      (cond
-      ;; L5
+       ;; L4
+       [(equal? jump3 4)
+        (set-subleq regs r1_4 r2_4)
+        (cond
+          [(positive? (vector-ref regs r2_4))
+           ;; L5
+           (set-subleq regs r1_5 r2_5)
+           (cond
+             [(positive? (vector-ref regs r2_5))
+              ;; L6
+              (set-subleq regs r1_6 r2_6)
+              (cond
+                [(positive? (vector-ref regs r2_6))
+                 ;; L7
+                 (set-subleq regs r1_7 r2_7)
+                 (cond
+                   [(positive? (vector-ref regs r2_7))
+                    next]
+                   [else
+                    label1])
+                 ]
+                [else
+                 ;; L6 -> L7 || next || label1
+                 (cond
+                   ;; L7
+                   [(equal? jump6 7)
+                    (set-subleq regs r1_7 r2_7)
+                    (cond
+                      [(positive? (vector-ref regs r2_7))
+                       next]
+                      [else
+                       label1])]
+                   ;; next
+                   [(equal? jump6 8) next]
+                   ;; label1
+                   [else label1])
+                 ])
+              ]
+             [else
+              ;; L5 -> L6 || L7 || next || label1
+              (cond
+                ;; L6
+                [(equal? jump5 6)
+                 (set-subleq regs r1_6 r2_6)
+                 (cond
+                   [(positive? (vector-ref regs r2_6))
+                    ;; L7
+                    (set-subleq regs r1_7 r2_7)
+                    (cond
+                      [(positive? (vector-ref regs r2_7))
+                       next]
+                      [else
+                       label1])]
+                   [else
+                    ;; L6 -> L7 || next || label1
+                    (cond
+                      ;; L7
+                      [(equal? jump6 7)
+                       (set-subleq regs r1_7 r2_7)
+                       (cond
+                         [(positive? (vector-ref regs r2_7))
+                          next]
+                         [else
+                          label1])]
+                      ;; next
+                      [(equal? jump6 8) next]
+                      ;; label1
+                      [else label1])
+                    ])]
+                ;; L7
+                [(equal? jump5 7)
+                 (set-subleq regs r1_7 r2_7)
+                 (cond
+                   [(positive? (vector-ref regs r2_7))
+                    next]
+                   [else
+                    label1])]
+                ;; next
+                [(equal? jump5 8) next]
+                ;; label1
+                [else label1])
+              ])
+           ]
+          [else
+           ;; L4 -> L5 || L6 || L7 || next || label1
+           (cond
+             ;; L5
+             [(equal? jump4 5)
+              (set-subleq regs r1_5 r2_5)
+              (cond
+                [(positive? (vector-ref regs r2_5))
+                 ;; L6
+                 (set-subleq regs r1_6 r2_6)
+                 (cond
+                   [(positive? (vector-ref regs r2_6))
+                    ;; L7
+                    (set-subleq regs r1_7 r2_7)
+                    (cond
+                      [(positive? (vector-ref regs r2_7))
+                       next]
+                      [else
+                       label1])
+                    ]
+                   [else
+                    ;; L6 -> L7 || next || label1
+                    (cond
+                      ;; L7
+                      [(equal? jump6 7)
+                       (set-subleq regs r1_7 r2_7)
+                       (cond
+                         [(positive? (vector-ref regs r2_7))
+                          next]
+                         [else
+                          label1])]
+                      ;; next
+                      [(equal? jump6 8) next]
+                      ;; label1
+                      [else label1])
+                    ])
+                 ]
+                [else
+                 ;; L5 -> L6 || L7 || next || label1
+                 (cond
+                   ;; L6
+                   [(equal? jump5 6)
+                    (set-subleq regs r1_6 r2_6)
+                    (cond
+                      [(positive? (vector-ref regs r2_6))
+                       ;; L7
+                       (set-subleq regs r1_7 r2_7)
+                       (cond
+                         [(positive? (vector-ref regs r2_7))
+                          next]
+                         [else
+                          label1])]
+                      [else
+                       ;; L6 -> L7 || next || label1
+                       (cond
+                         ;; L7
+                         [(equal? jump6 7)
+                          (set-subleq regs r1_7 r2_7)
+                          (cond
+                            [(positive? (vector-ref regs r2_7))
+                             next]
+                            [else
+                             label1])]
+                         ;; next
+                         [(equal? jump6 8) next]
+                         ;; label1
+                         [else label1])
+                       ])]
+                   ;; L7
+                   [(equal? jump5 7)
+                    (set-subleq regs r1_7 r2_7)
+                    (cond
+                      [(positive? (vector-ref regs r2_7))
+                       next]
+                      [else
+                       label1])]
+                   ;; next
+                   [(equal? jump5 8) next]
+                   ;; label1
+                   [else label1])
+                 ])
+              ]
+             ;; L6
+             [(equal? jump4 6)
+              (set-subleq regs r1_6 r2_6)
+              (cond
+                [(positive? (vector-ref regs r2_6))
+                 ;; L7
+                 (set-subleq regs r1_7 r2_7)
+                 (cond
+                   [(positive? (vector-ref regs r2_7))
+                    next]
+                   [else
+                    label1])
+                 ]
+                [else
+                 ;; L6 -> L7 || next || label1
+                 (cond
+                   ;; L7
+                   [(equal? jump6 7)
+                    (set-subleq regs r1_7 r2_7)
+                    (cond
+                      [(positive? (vector-ref regs r2_7))
+                       next]
+                      [else
+                       label1])]
+                   ;; next
+                   [(equal? jump6 8) next]
+                   ;; label1
+                   [else label1])
+                 ])
+              ]
+             ;; L7
+             [(equal? jump4 7)
+              (set-subleq regs r1_7 r2_7)
+              (cond
+                [(positive? (vector-ref regs r2_7))
+                 next]
+                [else
+                 label1])]
+             ;; next
+             [(equal? jump4 8) next]
+             ;; label1
+             [else label1])
+           ])
+        ]
+       ;; L5
        [(equal? jump3 5)
         (set-subleq regs r1_5 r2_5)
         (cond
@@ -547,7 +924,7 @@
            (cond
              [(positive? (vector-ref regs r2_6))
               ;; L7
-              (set-subleq r1_7 r2_7)
+              (set-subleq regs r1_7 r2_7)
               (cond
                 [(positive? (vector-ref regs r2_7))
                  next]
@@ -555,7 +932,7 @@
                  label1])
               ]
              [else
-              ;; L7 -> next || label1
+              ;; L6 -> L7 || next || label1
               (cond
                 ;; next
                 [(equal? jump6 8) next]
@@ -564,7 +941,7 @@
               ])
            ]
           [else
-           ;; L6 -> L7 || next || label1
+           ;; L5 -> L6 || L7 || next || label1
            (cond
              ;; L7
              [(equal? jump5 7)
@@ -580,13 +957,13 @@
              [else label1])
            ])
         ]
-      ;; L6
+       ;; L6
        [(equal? jump3 6)
         (set-subleq regs r1_6 r2_6)
         (cond
           [(positive? (vector-ref regs r2_6))
            ;; L7
-           (set-subleq r1_7 r2_7)
+           (set-subleq regs r1_7 r2_7)
            (cond
              [(positive? (vector-ref regs r2_7))
               next]
@@ -594,7 +971,7 @@
               label1])
            ]
           [else
-           ;; L7 -> next || label1
+           ;; L6 -> L7 || next || label1
            (cond
              ;; next
              [(equal? jump6 8) next]
@@ -602,7 +979,7 @@
              [else label1])
            ])
         ]
-      ;; L7
+       ;; L7
        [(equal? jump3 7)
         (set-subleq regs r1_7 r2_7)
         (cond
@@ -822,9 +1199,7 @@
   (assert (equal? (original regs) (example regs)))
   )
 
-(define (same-add original example)
-  (define-symbolic a integer?)
-  (define-symbolic b integer?)
+(define (same-add original example a b)
   (define regs (make-vector 10 0))
   (assert (equal? (original a b regs) (example a b regs)))
 )
@@ -843,28 +1218,17 @@
 ;; (verify (same-beqz simple-beqz subleq-beqz))
 
 ;; Synthesis examples
-;; (define regs (create-regs))
-
-;; (define (add-ex-synth regs)
-;;   (interpret `[(subleqi (??) (??) (??)) (subleqi 1 3 2) (subleqi 2 3 3) (subleqi 0 0 4)
-;;                                (subleqi 3 0 5) (goto 100)] regs)
-;;   )
-
-;; (define (add-orig-synth regs)
-;;   (interpret `[(add 0 1 2) (goto 100)] regs)
-;;   )
-
-;; (define (idio original example regs)
-;;   (assert (equal? (original regs) (example regs)))
-;;   )
-
 (define-symbolic a integer?)
 (define-symbolic b integer?)
 (define-symbolic c integer?)
 
+;; (define sol-add
+;;   (synthesize #:forall (list a b)
+;;               #:guarantee (same-add simple-add straightline-template a b)))
+
 (define sol-beqz
   (synthesize #:forall (list a b c)
-              #:guarantee (same-mult simple-beqz branch-template a b c)))
+              #:guarantee (same-beqz simple-beqz branch-template a b c)))
 
 ;; (define sol-mult
 ;;   (synthesize #:forall a
