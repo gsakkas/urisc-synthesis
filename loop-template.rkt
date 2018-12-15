@@ -12,52 +12,42 @@
   (vector-set! regs 1 a)
   (vector-set! regs 2 b)
   (define line10 (?? boolean?))
-  (define line11 #f) ;;(?? boolean?))
-  (define line12 #f) ;;(?? boolean?))
-  (define line13 #f) ;;(?? boolean?))
-  (define line3 #t) ;;(?? boolean?))
-  (define line4 #t) ;;(?? boolean?))
-  (define r1_0 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_0 (choose 0 3 4 5 6 7 8 9))
-  (define r1_10 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_10 (choose 0 3 4 5 6 7 8 9))
-  (define r1_11 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_11 (choose 0 3 4 5 6 7 8 9))
-  (define r1_12 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_12 (choose 0 3 4 5 6 7 8 9))
-  (define r1_13 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_13 (choose 0 3 4 5 6 7 8 9))
-  (define r1_2 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_2 (choose 0 3 4 5 6 7 8 9))
-  (define r1_3 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_3 (choose 0 3 4 5 6 7 8 9))
-  (define r1_4 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_4 (choose 0 3 4 5 6 7 8 9))
-  (define r1_5 (choose 0 1 2 3 4 5 6 7 8 9))
-  (define r2_5 (choose 0 3 4 5 6 7 8 9))
+  (define line11 (?? boolean?))
+  (define line12 (?? boolean?))
+  (define line13 (?? boolean?))
+  (define line3 (?? boolean?))
+  (define line4 (?? boolean?))
+  (define r1_0 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r2_0 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r1_10 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r2_10 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r1_11 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r2_11 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r1_12 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r2_12 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r1_13 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r2_13 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r1_2 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r2_2 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r1_3 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r2_3 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r1_4 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r2_4 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r1_5 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
+  (define r2_5 (choose 0 1 2 3 4 5 6 7 8 9 10 11))
   ;; L0
-  (set-subleq regs r1_0 r2_0)
-  ;; L1_0
-  (cond [line10 (set-subleq regs r1_10 r2_10)])
-  ;; L1_1
-  (cond [line11 (set-subleq regs r1_11 r2_11)])
-  ;; L1_2
-  (cond [line12 (set-subleq regs r1_12 r2_12)])
-  ;; L1_3
-  (cond [line13 (set-subleq regs r1_13 r2_13)])
-  ;; L2
-  (set-subleq regs r1_2 r2_2)
-  ;; L3
-  (cond [line3 (set-subleq regs r1_3 r2_3)])
-  ;; L4
-  (cond [line4 (set-subleq regs r1_4 r2_4)])
-  ;; L5
-  (set-subleq regs r1_5 r2_5)
   (cond
-    [(bvsgt (vector-ref regs r2_5) (bv 0 8))
-     ;; Exit
-     (vector-ref regs 0)]
+    [(and (bvsle b (bv 0 8)) (bvsge b (bv 5 8))) (bv 0 8)]
     [else
+     (set-subleq regs r1_0 r2_0)
+     ;; L1_0
+     (cond [line10 (set-subleq regs r1_10 r2_10)])
+     ;; L1_1
+     (cond [line11 (set-subleq regs r1_11 r2_11)])
+     ;; L1_2
+     (cond [line12 (set-subleq regs r1_12 r2_12)])
+     ;; L1_3
+     (cond [line13 (set-subleq regs r1_13 r2_13)])
      ;; L2
      (set-subleq regs r1_2 r2_2)
      ;; L3
@@ -118,8 +108,22 @@
                  (cond [line4 (set-subleq regs r1_4 r2_4)])
                  ;; L5
                  (set-subleq regs r1_5 r2_5)
-                 ;; Exit
-                 (vector-ref regs 0)
+                 (cond
+                   [(bvsgt (vector-ref regs r2_5) (bv 0 8))
+                    ;; Exit
+                    (vector-ref regs 0)]
+                   [else
+                    ;; L2
+                    (set-subleq regs r1_2 r2_2)
+                    ;; L3
+                    (cond [line3 (set-subleq regs r1_3 r2_3)])
+                    ;; L4
+                    (cond [line4 (set-subleq regs r1_4 r2_4)])
+                    ;; L5
+                    (set-subleq regs r1_5 r2_5)
+                    ;; Exit
+                    (vector-ref regs 0)
+                    ])
                  ])
               ])
            ])
@@ -127,16 +131,20 @@
      ])
   )
 
+;; (println (loop-template (bv 3 8) (bv 1 8) (vector (bv 0 8) (bv 0 8) (bv 0 8) (bv 0 8) (bv 0 8) (bv 0 8) (bv 0 8) (bv 0 8) (bv -1 8) (bv 1 8))))
+
 (define (simple-mult a b regs)
-  (if (bvsle b (bv 5 8)) (bvmul a b) (bvmul a (bv 6 8)))
+  (if (and (bvsle b (bv 0 8)) (bvsge b (bv 5 8))) (bv 0 8) (bvmul a b))
   )
 
 (define (same-mult original example a b)
   ;; (define b (bv 2 8))
-  (define regs (make-vector 10 (bv 0 8)))
-  (vector-set! regs 9 (bv 1 8))
+  (define regs (make-vector 12 (bv 0 8)))
+  (vector-set! regs 11 (bv 1 8))
+  (vector-set! regs 10 (bv -1 8))
   (assert (bveq (original a b regs) (example a b regs)))
   )
+
 ;; (define line10 #f)
 ;; (define line11 #t)
 ;; (define line12 #f)
